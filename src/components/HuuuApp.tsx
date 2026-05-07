@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { AppContext } from '@/context/AppContext'
 import { useThoughts } from '@/hooks/useThoughts'
 import Header from './Header'
@@ -13,8 +13,13 @@ export default function HuuuApp() {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
+  const contextValue = useMemo(
+    () => ({ dispatch, thoughts, activeId, setActiveId, isSearchOpen, setIsSearchOpen }),
+    [thoughts, activeId, isSearchOpen]
+  )
+
   return (
-    <AppContext.Provider value={{ dispatch, thoughts, activeId, setActiveId, isSearchOpen, setIsSearchOpen }}>
+    <AppContext.Provider value={contextValue}>
       <div className="huuu-app">
         <Header />
         <main className="thought-stream">

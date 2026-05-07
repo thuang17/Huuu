@@ -1,6 +1,6 @@
 'use client'
 
-import { useReducer, useEffect } from 'react'
+import { useReducer, useEffect, useMemo } from 'react'
 import { getThoughts, saveThoughts } from '@/lib/storage'
 import { groupThoughts } from '@/lib/dates'
 import type { Thought, ThoughtsAction } from '@/lib/types'
@@ -30,7 +30,7 @@ export function useThoughts() {
     saveThoughts(thoughts)
   }, [thoughts])
 
-  const sections = groupThoughts(thoughts)
+  const sections = useMemo(() => groupThoughts(thoughts), [thoughts])
 
   return { thoughts, sections, dispatch }
 }

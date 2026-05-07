@@ -14,7 +14,7 @@ export default function ThoughtSection({ title, thoughts }: ThoughtSectionProps)
   const { activeId, setActiveId } = useAppContext()
 
   return (
-    <div className="thought-section">
+    <section className="thought-section" aria-label={title}>
       <h2>{title}</h2>
       <AnimatePresence mode="popLayout">
         {thoughts.map(thought => (
@@ -27,6 +27,6 @@ export default function ThoughtSection({ title, thoughts }: ThoughtSectionProps)
           />
         ))}
       </AnimatePresence>
-    </div>
+    </section>
   )
 }
