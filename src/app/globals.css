@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #000;
+  --fg: #fff;
+  --text-primary: #eaeaea;
+  --text-secondary: #666;
+  --text-placeholder: #444;
+  --divider: #1e1e1e;
+  --highlight: #191919;
+  --menu-bg: #191919;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="light"] {
+  --bg: #fff;
+  --fg: #000;
+  --text-primary: #111;
+  --text-secondary: #888;
+  --text-placeholder: #bbb;
+  --divider: #e8e8e8;
+  --highlight: #f4f4f4;
+  --menu-bg: #fff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--bg);
+  color: var(--text-primary);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+/* Fade transition for thought blur — cannot use Tailwind for variable blur values */
+.thought-text {
+  transition: filter 2s ease, opacity 2s ease;
 }
+
+textarea {
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  resize: none;
+  width: 100%;
+  padding: 0;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+textarea::placeholder {
+  color: var(--text-placeholder);
+}
+
+textarea:read-only {
+  cursor: default;
+}
+
+/* Bottom page fade */
+.page-fade-bottom {
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+
+/* Scrollbar hidden */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
