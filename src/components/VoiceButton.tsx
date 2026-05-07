@@ -6,52 +6,43 @@ interface VoiceButtonProps {
   onResult: (text: string) => void
 }
 
+const SpeechRecognitionAPI =
+  typeof window !== 'undefined'
+    ? (window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null)
+    : null
+
 export default function VoiceButton({ onResult }: VoiceButtonProps) {
-  const [supported, setSupported] = useState(false)
   const [listening, setListening] = useState(false)
-  const recognitionRef = useRef<InstanceType<typeof window.SpeechRecognition> | null>(null)
+  const recognitionRef = useRef<InstanceType<typeof SpeechRecognitionAPI> | null>(null)
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SpeechRecognition) return
-
-    setSupported(true)
-
-    const recognition = new SpeechRecognition()
+    if (!SpeechRecognitionAPI) return
+    const recognition = new SpeechRecognitionAPI()
     recognition.lang = 'zh-CN'
     recognition.continuous = false
     recognition.interimResults = false
-
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       onResult(event.results[0][0].transcript)
-      setListening(false)
     }
-
-    recognition.onend = () => {
-      setListening(false)
-    }
-
+    recognition.onend = () => setListening(false)
     recognitionRef.current = recognition
   }, [onResult])
 
-  if (!supported) return null
+  if (!SpeechRecognitionAPI) return null
 
-  function handleClick() {
-    const recognition = recognitionRef.current
-    if (!recognition) return
-
+  const handleClick = () => {
+    if (!recognitionRef.current) return
     if (listening) {
-      recognition.stop()
+      recognitionRef.current.stop()
       setListening(false)
     } else {
-      recognition.start()
+      recognitionRef.current.start()
       setListening(true)
     }
   }
 
   return (
     <button
-      type="button"
       onClick={handleClick}
       aria-label={listening ? '停止语音输入' : '开始语音输入'}
     >
