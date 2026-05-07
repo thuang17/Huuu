@@ -5,7 +5,6 @@ import { AppContext } from '@/context/AppContext'
 import { useThoughts } from '@/hooks/useThoughts'
 import Header from './Header'
 import ThoughtSection from './ThoughtSection'
-import ThoughtInput from './ThoughtInput'
 import Onboarding from './Onboarding'
 import Omnibar from './Omnibar'
 
@@ -39,9 +38,6 @@ export default function HuuuApp() {
             {sections.map(([title, thoughts]) => (
               <ThoughtSection key={title} title={title} thoughts={thoughts} />
             ))}
-          </div>
-          <div className="input-area">
-            <ThoughtInput />
           </div>
         </main>
         <Onboarding />

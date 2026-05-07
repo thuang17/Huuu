@@ -3,6 +3,7 @@
 import { AnimatePresence } from 'framer-motion'
 import { useAppContext } from '@/context/AppContext'
 import ThoughtItem from './ThoughtItem'
+import ThoughtInput from './ThoughtInput'
 import type { Thought } from '@/lib/types'
 
 interface ThoughtSectionProps {
@@ -16,6 +17,7 @@ export default function ThoughtSection({ title, thoughts }: ThoughtSectionProps)
   return (
     <section className="thought-section" aria-label={title}>
       <h2>{title}</h2>
+      {title === '今天' && <ThoughtInput />}
       <AnimatePresence mode="popLayout">
         {thoughts.map(thought => (
           <ThoughtItem

@@ -77,7 +77,7 @@ export default function ThoughtInput() {
   )
 
   return (
-    <div>
+    <div className="thought-input-row">
       <textarea
         ref={textareaRef}
         className="thought-input"

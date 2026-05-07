@@ -104,7 +104,7 @@ textarea:read-only {
   display: flex;
   flex-direction: column;
   padding-top: 64px; /* below header */
-  padding-bottom: 160px; /* above input */
+  padding-bottom: 3rem;
   max-width: 680px;
   margin: 0 auto;
   width: 100%;
@@ -135,16 +135,7 @@ textarea:read-only {
   border-bottom: 1px solid var(--border);
 }
 
-.input-area {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem 2rem;
-  background: linear-gradient(to bottom, transparent, var(--bg) 40%);
-}
+/* .input-area removed — input is now inline in the thought stream */
 
 .menu-btn {
   margin-left: auto;
@@ -305,4 +296,45 @@ textarea:read-only {
 .onboarding-btn:hover {
   background: var(--accent);
   color: #fff;
+}
+
+.voice-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+.voice-btn:hover { color: var(--text-primary); }
+
+.thought-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  resize: none;
+  padding: 0.5rem 0;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.thought-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.thought-input-row .thought-input {
+  border-bottom: none;
+  padding: 0;
 }
