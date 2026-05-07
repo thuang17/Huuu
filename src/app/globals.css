@@ -115,7 +115,11 @@ textarea:read-only {
 }
 
 .thought-section {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
+}
+
+.thought-section + .thought-section {
+  margin-top: 48px;
 }
 
 .thought-section h2 {
@@ -134,6 +138,20 @@ textarea:read-only {
   border: none;
   user-select: text;
   position: relative;
+  isolation: isolate;
+}
+
+.thought-item--active::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: -12px;
+  right: -12px;
+  background: var(--highlight);
+  border-radius: 8px;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .thought-text {
@@ -200,12 +218,15 @@ textarea:read-only {
 .menu-item {
   width: 100%;
   text-align: left;
-  padding: 0.5rem 0.25rem;
+  padding: 4px 8px;
+  height: 28px;
+  display: flex;
+  align-items: center;
   background: none;
   border: none;
   border-radius: 4px;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 13px;
   cursor: pointer;
   transition: color 0.15s ease;
 }
@@ -373,7 +394,7 @@ textarea:read-only {
   height: 1px;
   background: #1e1e1e;
   border: 0;
-  margin: 12px 0 0;
+  margin: 16px 0 0;
 }
 
 [data-theme="light"] .thought-divider {
@@ -384,16 +405,16 @@ textarea:read-only {
 .thought-timestamp {
   opacity: 0;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   position: absolute;
-  left: -80px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: -72px;
+  top: 26px;
   transition: opacity 0.2s ease;
   white-space: nowrap;
   pointer-events: none;
 }
 
-.thought-item:hover .thought-timestamp {
+.thought-item:hover .thought-timestamp,
+.thought-item--active .thought-timestamp {
   opacity: 1;
 }

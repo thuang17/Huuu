@@ -124,7 +124,7 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
       transition={{ duration: 0.6, ease: 'easeInOut' }}
     >
       <div
-        className="thought-item"
+        className={`thought-item${isActive ? ' thought-item--active' : ''}`}
         onClick={editable ? onActivate : undefined}
         style={{ cursor: editable && !isActive ? 'text' : 'default' }}
       >
