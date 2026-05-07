@@ -1,7 +1,8 @@
 import {
   getThoughts, saveThoughts,
-  getDraft, saveDraft,
+  getDraft, saveDraft, clearDraft,
   isOnboarded, setOnboarded,
+  getTheme, saveTheme,
 } from '@/lib/storage'
 import type { Thought } from '@/lib/types'
 
@@ -39,6 +40,12 @@ describe('draft storage', () => {
     saveDraft('今天感觉不错')
     expect(getDraft()).toBe('今天感觉不错')
   })
+
+  it('clears draft', () => {
+    saveDraft('something')
+    clearDraft()
+    expect(getDraft()).toBe('')
+  })
 })
 
 describe('onboarding flag', () => {
@@ -49,5 +56,16 @@ describe('onboarding flag', () => {
   it('returns true after setOnboarded', () => {
     setOnboarded()
     expect(isOnboarded()).toBe(true)
+  })
+})
+
+describe('theme storage', () => {
+  it('returns dark when no theme set', () => {
+    expect(getTheme()).toBe('dark')
+  })
+
+  it('saves and retrieves theme', () => {
+    saveTheme('light')
+    expect(getTheme()).toBe('light')
   })
 })

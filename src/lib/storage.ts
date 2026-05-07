@@ -1,8 +1,9 @@
-import type { Thought } from './types'
+import type { Thought, Theme } from './types'
 
 const THOUGHTS_KEY = '__HUUU_THOUGHTS__'
 const DRAFT_KEY = '__HUUU_DRAFT__'
 const ONBOARDED_KEY = '__HUUU_HAS_ONBOARDED__'
+const THEME_KEY = '__HUUU_THEME__'
 
 export function getThoughts(): Thought[] {
   try {
@@ -37,10 +38,10 @@ export function setOnboarded(): void {
   localStorage.setItem(ONBOARDED_KEY, 'true')
 }
 
-export function getTheme(): string {
-  return localStorage.getItem('theme') ?? 'dark'
+export function getTheme(): Theme {
+  return (localStorage.getItem(THEME_KEY) as Theme | null) ?? 'dark'
 }
 
-export function saveTheme(theme: string): void {
-  localStorage.setItem('theme', theme)
+export function saveTheme(theme: Theme): void {
+  localStorage.setItem(THEME_KEY, theme)
 }
