@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AppContext } from '@/context/AppContext'
 import { useThoughts } from '@/hooks/useThoughts'
 import Header from './Header'
 import ThoughtSection from './ThoughtSection'
 import ThoughtInput from './ThoughtInput'
 import Onboarding from './Onboarding'
+import Omnibar from './Omnibar'
 
 export default function HuuuApp() {
   const { thoughts, sections, dispatch } = useThoughts()
@@ -17,6 +18,17 @@ export default function HuuuApp() {
     () => ({ dispatch, thoughts, activeId, setActiveId, isSearchOpen, setIsSearchOpen }),
     [thoughts, activeId, isSearchOpen]
   )
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+        e.preventDefault()
+        setIsSearchOpen(prev => !prev)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [setIsSearchOpen])
 
   return (
     <AppContext.Provider value={contextValue}>
@@ -33,6 +45,7 @@ export default function HuuuApp() {
           </div>
         </main>
         <Onboarding />
+        <Omnibar />
       </div>
     </AppContext.Provider>
   )
