@@ -25,6 +25,7 @@ export default function VoiceButton({ onResult }: VoiceButtonProps) {
       onResult(event.results[0][0].transcript)
     }
     recognition.onend = () => setListening(false)
+    recognition.onerror = () => setListening(false)
     recognitionRef.current = recognition
   }, [onResult])
 
@@ -36,8 +37,13 @@ export default function VoiceButton({ onResult }: VoiceButtonProps) {
       recognitionRef.current.stop()
       setListening(false)
     } else {
-      recognitionRef.current.start()
-      setListening(true)
+      try {
+        recognitionRef.current.start()
+        setListening(true)
+      } catch {
+        // mic permission denied or unavailable
+        setListening(false)
+      }
     }
   }
 

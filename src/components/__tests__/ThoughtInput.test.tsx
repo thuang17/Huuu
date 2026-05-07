@@ -2,7 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import ThoughtInput from '../ThoughtInput'
 
-const mockDispatch = vi.fn()
+const { mockDispatch, mockClearDraft } = vi.hoisted(() => ({
+  mockDispatch: vi.fn(),
+  mockClearDraft: vi.fn(),
+}))
 
 vi.mock('@/context/AppContext', () => ({
   useAppContext: () => ({
@@ -18,7 +21,7 @@ vi.mock('@/context/AppContext', () => ({
 vi.mock('@/lib/storage', () => ({
   getDraft: () => '',
   saveDraft: vi.fn(),
-  clearDraft: vi.fn(),
+  clearDraft: mockClearDraft,
 }))
 
 vi.mock('@/components/VoiceButton', () => ({
@@ -28,11 +31,12 @@ vi.mock('@/components/VoiceButton', () => ({
 describe('ThoughtInput', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
+    mockClearDraft.mockClear()
   })
 
   it('renders textarea with placeholder', () => {
     render(<ThoughtInput />)
-    expect(screen.getByRole('textbox')).toBeTruthy()
+    expect(screen.getByRole('textbox')).toBeInTheDocument()
   })
 
   it('submits thought on Enter', () => {
@@ -44,6 +48,8 @@ describe('ThoughtInput', () => {
       type: 'ADD',
       thought: expect.objectContaining({ value: 'test thought' }),
     })
+    expect(textarea).toHaveValue('')
+    expect(mockClearDraft).toHaveBeenCalledOnce()
   })
 
   it('does not submit on Shift+Enter', () => {

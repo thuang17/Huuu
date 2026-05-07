@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAppContext } from '@/context/AppContext'
 import { getDraft, saveDraft, clearDraft } from '@/lib/storage'
 import { generateId } from '@/lib/ids'
@@ -71,6 +71,11 @@ export default function ThoughtInput() {
     }
   }
 
+  const handleVoiceResult = useCallback(
+    (text: string) => setValue(prev => prev + text),
+    []
+  )
+
   return (
     <div>
       <textarea
@@ -85,7 +90,7 @@ export default function ThoughtInput() {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
-      <VoiceButton onResult={(text) => setValue((prev) => prev + text)} />
+      <VoiceButton onResult={handleVoiceResult} />
     </div>
   )
 }

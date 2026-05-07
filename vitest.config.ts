@@ -6,6 +6,7 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     pool: 'vmForks',
+    setupFiles: ['./src/test-setup.ts'],
   },
   resolve: {
     alias: {
