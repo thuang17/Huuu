@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAppContext } from '@/context/AppContext'
 import type { Thought } from '@/lib/types'
@@ -14,12 +14,14 @@ interface ThoughtItemProps {
 
 type AgeState = 'fresh' | 'recent' | 'retiring' | 'retired'
 
+const RETIRE_DELAY_MS = 5 * 60 * 1000
+const RETIRE_ANIM_MS = 2000 // the "retiring" transition window
+
 function getAgeState(ageMs: number): AgeState {
-  const FIVE_MIN = 5 * 60 * 1000
-  const RETIRE_TRANSITION = FIVE_MIN + 2000
+  const RETIRE_TRANSITION = RETIRE_DELAY_MS + RETIRE_ANIM_MS
 
   if (ageMs < 60_000) return 'fresh'
-  if (ageMs < FIVE_MIN) return 'recent'
+  if (ageMs < RETIRE_DELAY_MS) return 'recent'
   if (ageMs < RETIRE_TRANSITION) return 'retiring'
   return 'retired'
 }
@@ -40,14 +42,14 @@ function getAgeStyle(state: AgeState): { filter: string; opacity: number } {
 export default function ThoughtItem({ thought, isActive, onActivate, onDeactivate }: ThoughtItemProps) {
   const { dispatch } = useAppContext()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [renderTick, setRenderTick] = useState(0)
 
   const ageMs = Date.now() - new Date(thought.timestamp).getTime()
   const ageState = getAgeState(ageMs)
   const ageStyle = getAgeStyle(ageState)
 
   useEffect(() => {
-    const FIVE_MIN = 5 * 60 * 1000
-    const msUntilRetire = FIVE_MIN - (Date.now() - new Date(thought.timestamp).getTime())
+    const msUntilRetire = RETIRE_DELAY_MS - (Date.now() - new Date(thought.timestamp).getTime())
 
     if (msUntilRetire <= 0) {
       dispatch({ type: 'RETIRE', id: thought.id })
@@ -60,6 +62,42 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
 
     return () => clearTimeout(timer)
   }, [thought.id, thought.timestamp, dispatch])
+
+  useEffect(() => {
+    const ageMs = Date.now() - new Date(thought.timestamp).getTime()
+
+    // Compute next boundary (ms until next state change)
+    let msUntilNextBoundary: number | null = null
+
+    if (ageMs < 60_000) {
+      // fresh → recent at 60s
+      msUntilNextBoundary = 60_000 - ageMs
+    } else if (ageMs < RETIRE_DELAY_MS) {
+      // recent → retiring at 5min
+      msUntilNextBoundary = RETIRE_DELAY_MS - ageMs
+    } else if (ageMs < RETIRE_DELAY_MS + RETIRE_ANIM_MS) {
+      // retiring → retired at 5min+2s
+      msUntilNextBoundary = RETIRE_DELAY_MS + RETIRE_ANIM_MS - ageMs
+    }
+    // already retired: no more boundaries
+
+    if (msUntilNextBoundary === null) return
+
+    const timer = setTimeout(() => {
+      // Force re-render by updating a counter state
+      setRenderTick(t => t + 1)
+    }, msUntilNextBoundary)
+
+    return () => clearTimeout(timer)
+  }, [thought.timestamp, renderTick]) // re-schedule after each tick
+
+  useEffect(() => {
+    if (isActive && textareaRef.current) {
+      const ta = textareaRef.current
+      ta.style.height = 'auto'
+      ta.style.height = ta.scrollHeight + 'px'
+    }
+  }, [isActive])
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     dispatch({ type: 'UPDATE', id: thought.id, value: e.target.value })
@@ -81,7 +119,14 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="thought-item" onClick={onActivate}>
+      <div
+        className="thought-item"
+        onClick={onActivate}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onActivate() }}
+        role="button"
+        tabIndex={isActive ? -1 : 0}
+        aria-label="编辑此想法"
+      >
         {isActive ? (
           <textarea
             ref={textareaRef}

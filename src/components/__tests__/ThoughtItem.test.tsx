@@ -42,6 +42,8 @@ const defaultProps = {
 describe('ThoughtItem', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
+    defaultProps.onActivate.mockClear()
+    defaultProps.onDeactivate.mockClear()
   })
 
   it('renders thought text', () => {
@@ -92,5 +94,22 @@ describe('ThoughtItem', () => {
         id: 'test-id',
       })
     })
+  })
+
+  it('calls onDeactivate when textarea blurs', () => {
+    const thought = makeThought()
+    render(<ThoughtItem thought={thought} {...defaultProps} isActive={true} />)
+    const textarea = screen.getByRole('textbox')
+    fireEvent.blur(textarea)
+    expect(defaultProps.onDeactivate).toHaveBeenCalledOnce()
+  })
+
+  it('calls onActivate when inactive thought is clicked', () => {
+    const thought = makeThought()
+    render(<ThoughtItem thought={thought} {...defaultProps} isActive={false} />)
+    // Click the wrapper div (thought-item)
+    const wrapper = screen.getByRole('button')
+    fireEvent.click(wrapper)
+    expect(defaultProps.onActivate).toHaveBeenCalledOnce()
   })
 })
