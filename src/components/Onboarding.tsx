@@ -45,28 +45,26 @@ export default function Onboarding() {
   return (
     <div className="onboarding-overlay">
       <div className="onboarding-messages">
-        {messages.slice(0, visibleCount).map((msg, i) => (
+        {messages.map((msg, i) => (
           <motion.p
             key={i}
             className="onboarding-message"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: i < visibleCount ? 1 : 0 }}
             transition={{ duration: 1.2, ease: 'easeInOut' }}
+            style={{ opacity: 0 }}
           >
             {msg}
           </motion.p>
         ))}
-        {showButton && (
-          <motion.button
-            className="onboarding-btn"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, ease: 'easeInOut' }}
-            onClick={handleStart}
-          >
-            开始使用
-          </motion.button>
-        )}
+        <motion.button
+          className="onboarding-btn"
+          animate={{ opacity: showButton ? 1 : 0 }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          style={{ opacity: 0, pointerEvents: showButton ? 'auto' : 'none' }}
+          onClick={handleStart}
+        >
+          开始使用
+        </motion.button>
       </div>
     </div>
   )

@@ -36,9 +36,10 @@ describe('Onboarding', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('shows no messages initially', () => {
+  it('renders all messages in DOM initially (transparent)', () => {
     render(<Onboarding />)
-    expect(screen.queryByText('欢迎来到 Huuu。')).not.toBeInTheDocument()
+    // All messages are pre-rendered for smooth layout — just invisible
+    expect(screen.getByText('欢迎来到 Huuu。')).toBeInTheDocument()
   })
 
   it('shows first message after 1200ms', async () => {
