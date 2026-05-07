@@ -1,11 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import Omnibar from '../Omnibar'
+import { useAppContext } from '@/context/AppContext'
 
 // Mock createPortal to just render children directly
 vi.mock('react-dom', async () => {
   const actual = await vi.importActual<typeof import('react-dom')>('react-dom')
-  return { ...actual, createPortal: (children: React.ReactNode) => children }
+  return {
+    ...actual,
+    createPortal: (children: React.ReactNode, _container: Element) => children,
+  }
 })
 
 const mockSetIsSearchOpen = vi.fn()
@@ -15,18 +19,21 @@ const mockThoughts = [
 ]
 
 vi.mock('@/context/AppContext', () => ({
-  useAppContext: () => ({
-    thoughts: mockThoughts,
-    isSearchOpen: true,
-    setIsSearchOpen: mockSetIsSearchOpen,
-    dispatch: vi.fn(),
-    activeId: null,
-    setActiveId: vi.fn(),
-  }),
+  useAppContext: vi.fn(),
 }))
 
 describe('Omnibar', () => {
-  beforeEach(() => mockSetIsSearchOpen.mockClear())
+  beforeEach(() => {
+    mockSetIsSearchOpen.mockClear()
+    vi.mocked(useAppContext).mockReturnValue({
+      thoughts: mockThoughts,
+      isSearchOpen: true,
+      setIsSearchOpen: mockSetIsSearchOpen,
+      dispatch: vi.fn(),
+      activeId: null,
+      setActiveId: vi.fn(),
+    })
+  })
 
   it('renders search input when open', () => {
     render(<Omnibar />)
@@ -59,5 +66,18 @@ describe('Omnibar', () => {
     const input = screen.getByRole('textbox')
     fireEvent.keyDown(input, { key: 'Escape' })
     expect(mockSetIsSearchOpen).toHaveBeenCalledWith(false)
+  })
+
+  it('renders nothing when closed', () => {
+    vi.mocked(useAppContext).mockReturnValueOnce({
+      thoughts: mockThoughts,
+      isSearchOpen: false,
+      setIsSearchOpen: mockSetIsSearchOpen,
+      dispatch: vi.fn(),
+      activeId: null,
+      setActiveId: vi.fn(),
+    })
+    const { container } = render(<Omnibar />)
+    expect(container.firstChild).toBeNull()
   })
 })

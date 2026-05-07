@@ -16,6 +16,8 @@ export default function Omnibar() {
 
   if (!isSearchOpen) return null
 
+  if (typeof document === 'undefined') return null
+
   const filteredThoughts = thoughts.filter(t =>
     t.value.toLowerCase().includes(query.toLowerCase())
   )
