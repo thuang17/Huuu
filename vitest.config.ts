@@ -1,14 +1,15 @@
 import { defineConfig } from 'vitest/config'
-import { fileURLToPath, URL } from 'url'
+import path from 'path'
 
 export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    pool: 'vmForks',
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 })
