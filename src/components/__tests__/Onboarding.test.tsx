@@ -41,21 +41,21 @@ describe('Onboarding', () => {
     expect(screen.queryByText('欢迎来到 Huuu。')).not.toBeInTheDocument()
   })
 
-  it('shows first message after 800ms', async () => {
+  it('shows first message after 1200ms', async () => {
     render(<Onboarding />)
-    await act(async () => { vi.advanceTimersByTime(800) })
+    await act(async () => { vi.advanceTimersByTime(1200) })
     expect(screen.getByText('欢迎来到 Huuu。')).toBeInTheDocument()
   })
 
-  it('shows all 5 messages after 4000ms', async () => {
+  it('shows all 5 messages after 6000ms', async () => {
     render(<Onboarding />)
-    await act(async () => { vi.advanceTimersByTime(4000) })
+    await act(async () => { vi.advanceTimersByTime(6000) })
     expect(screen.getByText('开始写吧。')).toBeInTheDocument()
   })
 
   it('calls setOnboarded when button is clicked', async () => {
     render(<Onboarding />)
-    await act(async () => { vi.advanceTimersByTime(4000 + 2000) })
+    await act(async () => { vi.advanceTimersByTime(6000 + 2500) })
     const btn = screen.getByRole('button', { name: '开始使用' })
     fireEvent.click(btn)
     expect(mockSetOnboarded).toHaveBeenCalledOnce()

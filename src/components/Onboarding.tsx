@@ -26,10 +26,10 @@ export default function Onboarding() {
 
     const timers: ReturnType<typeof setTimeout>[] = []
     messages.forEach((_, i) => {
-      timers.push(setTimeout(() => setVisibleCount(i + 1), (i + 1) * 800))
+      timers.push(setTimeout(() => setVisibleCount(i + 1), (i + 1) * 1200))
     })
-    // Show button 2000ms after last message
-    timers.push(setTimeout(() => setShowButton(true), messages.length * 800 + 2000))
+    // Show button 2500ms after last message
+    timers.push(setTimeout(() => setShowButton(true), messages.length * 1200 + 2500))
     return () => timers.forEach(clearTimeout)
   }, [])
 
@@ -49,9 +49,9 @@ export default function Onboarding() {
           <motion.p
             key={i}
             className="onboarding-message"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
           >
             {msg}
           </motion.p>
@@ -61,7 +61,7 @@ export default function Onboarding() {
             className="onboarding-btn"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 1.2, ease: 'easeInOut' }}
             onClick={handleStart}
           >
             开始使用
