@@ -130,8 +130,18 @@ textarea:read-only {
 }
 
 .thought-item {
-  padding: 1rem 0;
-  cursor: text;
+  padding: 0.875rem 0;
+  outline: none;
+  border: none;
+  user-select: text;
+}
+
+.thought-text {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-primary);
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 /* .input-area removed — input is now inline in the thought stream */

@@ -112,22 +112,22 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
     }
   }
 
+  // readOnly thoughts (retired) cannot be edited
+  const editable = !thought.readOnly
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6, ease: 'easeInOut' }}
     >
       <div
         className="thought-item"
-        onClick={onActivate}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onActivate() }}
-        role="button"
-        tabIndex={isActive ? -1 : 0}
-        aria-label="编辑此想法"
+        onClick={editable ? onActivate : undefined}
+        style={{ cursor: editable && !isActive ? 'text' : 'default' }}
       >
-        {isActive ? (
+        {isActive && editable ? (
           <textarea
             ref={textareaRef}
             value={thought.value}

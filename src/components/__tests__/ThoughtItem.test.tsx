@@ -107,9 +107,9 @@ describe('ThoughtItem', () => {
   it('calls onActivate when inactive thought is clicked', () => {
     const thought = makeThought()
     render(<ThoughtItem thought={thought} {...defaultProps} isActive={false} />)
-    // Click the wrapper div (thought-item)
-    const wrapper = screen.getByRole('button')
-    fireEvent.click(wrapper)
+    // Click the thought text paragraph
+    const p = screen.getByText(thought.value)
+    fireEvent.click(p)
     expect(defaultProps.onActivate).toHaveBeenCalledOnce()
   })
 })
