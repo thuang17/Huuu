@@ -78,6 +78,7 @@ textarea:read-only {
   flex-direction: column;
   background-color: var(--bg);
   color: var(--text-primary);
+  position: relative;
 }
 
 .app-header {
@@ -85,10 +86,10 @@ textarea:read-only {
   top: 0;
   left: 0;
   right: 0;
-  height: 48px;
+  height: 40px;
   display: flex;
   align-items: center;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   z-index: 10;
 }
 
@@ -103,13 +104,10 @@ textarea:read-only {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-top: 64px; /* below header */
-  padding-bottom: 3rem;
-  max-width: 680px;
+  max-width: 960px;
   margin: 0 auto;
   width: 100%;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding: 120px 2rem 4rem;
 }
 
 .thought-list {
@@ -121,12 +119,13 @@ textarea:read-only {
 }
 
 .thought-section h2 {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-secondary);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .thought-item {
@@ -134,14 +133,16 @@ textarea:read-only {
   outline: none;
   border: none;
   user-select: text;
+  position: relative;
 }
 
 .thought-text {
   font-size: 1rem;
-  line-height: 1.75;
+  line-height: 1.5;
   color: var(--text-primary);
   word-break: break-word;
   white-space: pre-wrap;
+  margin: 0;
 }
 
 /* .input-area removed — input is now inline in the thought stream */
@@ -330,11 +331,11 @@ textarea:read-only {
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
   font-size: 1rem;
+  line-height: 1.5;
   outline: none;
   resize: none;
   padding: 0.5rem 0;
   font-family: inherit;
-  line-height: 1.6;
 }
 
 .thought-input-row {
@@ -347,4 +348,52 @@ textarea:read-only {
 .thought-input-row .thought-input {
   border-bottom: none;
   padding: 0;
+}
+
+/* Bottom gradient fade */
+.thought-stream::after {
+  content: "";
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), 80%, #000);
+  width: 100%;
+  height: 300px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+[data-theme="light"] .thought-stream::after {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.1), 80%, #fff);
+}
+
+/* HR divider between input and thought list */
+.thought-divider {
+  width: 100%;
+  height: 1px;
+  background: #1e1e1e;
+  border: 0;
+  margin: 12px 0 0;
+}
+
+[data-theme="light"] .thought-divider {
+  background: #e8e8e8;
+}
+
+/* Hover timestamps */
+.thought-timestamp {
+  opacity: 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  position: absolute;
+  left: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.thought-item:hover .thought-timestamp {
+  opacity: 1;
 }

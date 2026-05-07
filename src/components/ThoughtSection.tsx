@@ -17,7 +17,12 @@ export default function ThoughtSection({ title, thoughts }: ThoughtSectionProps)
   return (
     <section className="thought-section" aria-label={title}>
       <h2>{title}</h2>
-      {title === '今天' && <ThoughtInput />}
+      {title === '今天' && (
+        <>
+          <ThoughtInput />
+          <hr className="thought-divider" />
+        </>
+      )}
       <AnimatePresence mode="popLayout">
         {thoughts.map(thought => (
           <ThoughtItem

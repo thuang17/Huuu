@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAppContext } from '@/context/AppContext'
+import { formatTimestamp } from '@/lib/dates'
 import type { Thought } from '@/lib/types'
 
 interface ThoughtItemProps {
@@ -127,6 +128,9 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
         onClick={editable ? onActivate : undefined}
         style={{ cursor: editable && !isActive ? 'text' : 'default' }}
       >
+        <span className="thought-timestamp">
+          {formatTimestamp(thought.timestamp)}
+        </span>
         {isActive && editable ? (
           <textarea
             ref={textareaRef}

@@ -31,7 +31,9 @@ export default function Header() {
         aria-label={isMenuOpen ? '关闭菜单' : '打开菜单'}
         aria-expanded={isMenuOpen}
       >
-        ☰
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7"/>
+        </svg>
       </button>
       {isMenuOpen && (
         <div className="header-menu" role="menu">
