@@ -13,6 +13,7 @@ export function useTheme() {
   const setTheme = (newTheme: Theme) => {
     saveTheme(newTheme)
     setThemeState(newTheme)
+    if (typeof window === 'undefined') return
     // Apply to DOM
     if (newTheme === 'system') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches

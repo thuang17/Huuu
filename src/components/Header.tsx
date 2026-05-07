@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTheme } from '@/hooks/useTheme'
 import { useAppContext } from '@/context/AppContext'
 import type { Theme } from '@/lib/types'
@@ -9,9 +9,21 @@ export default function Header() {
   const { theme, setTheme } = useTheme()
   const { dispatch, thoughts } = useAppContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (!isMenuOpen) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setIsMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMenuOpen])
 
   return (
-    <header className="app-header">
+    <header ref={headerRef} className="app-header">
       <div className="logo">Huuu</div>
       <button
         className="menu-btn"

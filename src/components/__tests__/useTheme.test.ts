@@ -14,14 +14,14 @@ describe('useTheme', () => {
 
   it('updates theme state when setTheme is called', async () => {
     const { result } = renderHook(() => useTheme())
-    act(() => result.current.setTheme('light'))
+    await act(async () => { result.current.setTheme('light') })
     expect(result.current.theme).toBe('light')
   })
 
   it('saves theme to storage when setTheme is called', async () => {
     const { saveTheme } = await import('@/lib/storage')
     const { result } = renderHook(() => useTheme())
-    act(() => result.current.setTheme('light'))
+    await act(async () => { result.current.setTheme('light') })
     expect(saveTheme).toHaveBeenCalledWith('light')
   })
 })
