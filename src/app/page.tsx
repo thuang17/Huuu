@@ -1,3 +1,5 @@
+import HuuuApp from '@/components/HuuuApp'
+
 export default function Home() {
-  return <main>Huuu</main>
+  return <HuuuApp />
 }

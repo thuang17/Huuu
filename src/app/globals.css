@@ -67,3 +67,77 @@ textarea:read-only {
 /* Scrollbar hidden */
 ::-webkit-scrollbar { display: none; }
 * { scrollbar-width: none; }
+
+.huuu-app {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  color: var(--text-primary);
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.thought-stream {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 64px; /* below header */
+  padding-bottom: 160px; /* above input */
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.thought-list {
+  flex: 1;
+}
+
+.thought-section {
+  margin-bottom: 2rem;
+}
+
+.thought-section h2 {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.thought-item {
+  padding: 0.5rem 0;
+  cursor: text;
+  border-bottom: 1px solid var(--border);
+}
+
+.input-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 2rem;
+  background: linear-gradient(to bottom, transparent, var(--bg) 40%);
+}
