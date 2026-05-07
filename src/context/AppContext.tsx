@@ -1,5 +1,3 @@
-'use client'
-
 import { createContext, useContext } from 'react'
 import type { ThoughtsAction, Thought } from '@/lib/types'
 
@@ -16,6 +14,6 @@ export const AppContext = createContext<AppContextValue | null>(null)
 
 export function useAppContext(): AppContextValue {
   const ctx = useContext(AppContext)
-  if (!ctx) throw new Error('useAppContext must be used inside HuuuApp')
+  if (!ctx) throw new Error('useAppContext must be used within a component wrapped by AppContext.Provider')
   return ctx
 }
