@@ -1,7 +1,7 @@
 import type { Thought } from './types'
 
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-const JUST_NOW_MS = 44_000
+const JUST_NOW_MS = 60_000 // timestamps under 1 minute show as "刚刚"
 const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000
 
 function startOfDay(date: Date): Date {
@@ -36,8 +36,8 @@ export function formatTimestamp(isoString: string): string {
   }
 
   const hours = Math.floor(diff / 3_600_000)
-  const days = Math.floor(diff / 86_400_000)
   if (hours < 24) return `${hours}小时前`
+  const days = Math.floor(diff / 86_400_000)
   return `${days}天前`
 }
 

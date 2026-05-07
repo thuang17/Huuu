@@ -26,14 +26,26 @@ describe('getSectionTitle', () => {
   })
 
   it('returns weekday name for 2-5 days ago', () => {
-    const title = getSectionTitle(daysAgo(3))
-    expect(['周一','周二','周三','周四','周五','周六','周日']).toContain(title)
+    const date = daysAgo(3)
+    const expected = ['周日','周一','周二','周三','周四','周五','周六'][date.getDay()]
+    expect(getSectionTitle(date)).toBe(expected)
   })
 
   it('returns month-day format for 6+ days ago', () => {
     const date = daysAgo(10)
     const title = getSectionTitle(date)
     expect(title).toMatch(/^\d+月\d+日$/)
+  })
+
+  it('returns weekday for exactly 5 days ago', () => {
+    const date = daysAgo(5)
+    const expected = ['周日','周一','周二','周三','周四','周五','周六'][date.getDay()]
+    expect(getSectionTitle(date)).toBe(expected)
+  })
+
+  it('returns month-day for exactly 6 days ago', () => {
+    const date = daysAgo(6)
+    expect(getSectionTitle(date)).toMatch(/^\d+月\d+日$/)
   })
 })
 
@@ -51,6 +63,11 @@ describe('formatTimestamp', () => {
   it('returns X小时前 for timestamps over 12 hours old', () => {
     const fourteenHoursAgo = new Date(Date.now() - 14 * 60 * 60 * 1000)
     expect(formatTimestamp(fourteenHoursAgo.toISOString())).toBe('14小时前')
+  })
+
+  it('returns X天前 for timestamps over 24 hours old', () => {
+    const twoDaysAgo = new Date(Date.now() - 25 * 60 * 60 * 1000)
+    expect(formatTimestamp(twoDaysAgo.toISOString())).toBe('1天前')
   })
 })
 
