@@ -6,14 +6,16 @@ interface VoiceButtonProps {
   onResult: (text: string) => void
 }
 
-const SpeechRecognitionAPI =
+type SpeechRecognitionCtor = new () => SpeechRecognition
+
+const SpeechRecognitionAPI: SpeechRecognitionCtor | null =
   typeof window !== 'undefined'
-    ? (window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null)
+    ? ((window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null) as SpeechRecognitionCtor | null)
     : null
 
 export default function VoiceButton({ onResult }: VoiceButtonProps) {
   const [listening, setListening] = useState(false)
-  const recognitionRef = useRef<InstanceType<typeof SpeechRecognitionAPI> | null>(null)
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
 
   useEffect(() => {
     if (!SpeechRecognitionAPI) return
