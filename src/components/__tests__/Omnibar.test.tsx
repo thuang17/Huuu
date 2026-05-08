@@ -32,6 +32,8 @@ describe('Omnibar', () => {
       dispatch: vi.fn(),
       activeId: null,
       setActiveId: vi.fn(),
+      isFocusMode: false,
+      setFocusMode: vi.fn(),
     })
   })
 
@@ -76,6 +78,8 @@ describe('Omnibar', () => {
       dispatch: vi.fn(),
       activeId: null,
       setActiveId: vi.fn(),
+      isFocusMode: false,
+      setFocusMode: vi.fn(),
     })
     const { container } = render(<Omnibar />)
     expect(container.firstChild).toBeNull()

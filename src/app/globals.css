@@ -99,6 +99,12 @@ textarea:read-only {
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.logo--hidden {
+  transform: translateX(-40px);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .thought-stream {
@@ -174,9 +180,14 @@ textarea:read-only {
   font-size: 1.25rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  transition: color 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, color 0.15s ease;
 }
 .menu-btn:hover { color: var(--text-primary); }
+.header-btn--hidden {
+  transform: translateX(40px);
+  opacity: 0;
+  pointer-events: none;
+}
 
 .header-menu {
   position: absolute;

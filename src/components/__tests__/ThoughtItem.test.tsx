@@ -14,6 +14,8 @@ vi.mock('@/context/AppContext', () => ({
     setActiveId: vi.fn(),
     isSearchOpen: false,
     setIsSearchOpen: vi.fn(),
+    isFocusMode: false,
+    setFocusMode: vi.fn(),
   }),
 }))
 

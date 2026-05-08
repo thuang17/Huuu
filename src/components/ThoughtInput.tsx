@@ -17,7 +17,7 @@ const PLACEHOLDERS = [
 ]
 
 export default function ThoughtInput() {
-  const { dispatch } = useAppContext()
+  const { dispatch, setFocusMode } = useAppContext()
   const [value, setValue] = useState('')
   const [placeholder] = useState(
     () => PLACEHOLDERS[Math.floor(Math.random() * PLACEHOLDERS.length)]
@@ -89,6 +89,8 @@ export default function ThoughtInput() {
         autoFocus
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        onFocus={() => setFocusMode(true)}
+        onBlur={() => setFocusMode(false)}
       />
       <VoiceButton onResult={handleVoiceResult} />
     </div>

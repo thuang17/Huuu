@@ -7,7 +7,7 @@ import type { Theme } from '@/lib/types'
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
-  const { dispatch, thoughts } = useAppContext()
+  const { dispatch, thoughts, isFocusMode } = useAppContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
 
@@ -24,9 +24,9 @@ export default function Header() {
 
   return (
     <header ref={headerRef} className="app-header">
-      <div className="logo">Huuu</div>
+      <div className={`logo${isFocusMode ? ' logo--hidden' : ''}`}>Huuu</div>
       <button
-        className="menu-btn"
+        className={`menu-btn${isFocusMode ? ' header-btn--hidden' : ''}`}
         onClick={() => setIsMenuOpen(prev => !prev)}
         aria-label={isMenuOpen ? '关闭菜单' : '打开菜单'}
         aria-expanded={isMenuOpen}

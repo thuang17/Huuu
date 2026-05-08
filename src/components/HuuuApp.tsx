@@ -12,10 +12,11 @@ export default function HuuuApp() {
   const { thoughts, sections, dispatch } = useThoughts()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isFocusMode, setFocusMode] = useState(false)
 
   const contextValue = useMemo(
-    () => ({ dispatch, thoughts, activeId, setActiveId, isSearchOpen, setIsSearchOpen }),
-    [thoughts, activeId, isSearchOpen]
+    () => ({ dispatch, thoughts, activeId, setActiveId, isSearchOpen, setIsSearchOpen, isFocusMode, setFocusMode }),
+    [thoughts, activeId, isSearchOpen, isFocusMode]
   )
 
   useEffect(() => {

@@ -8,6 +8,8 @@ interface AppContextValue {
   setActiveId: (id: string | null) => void
   isSearchOpen: boolean
   setIsSearchOpen: (open: boolean) => void
+  isFocusMode: boolean
+  setFocusMode: (mode: boolean) => void
 }
 
 export const AppContext = createContext<AppContextValue | null>(null)
