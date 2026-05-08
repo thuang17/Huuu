@@ -48,7 +48,7 @@ textarea {
   resize: none;
   width: 100%;
   padding: 0;
-  line-height: 1.7;
+  line-height: 1.6;
   font-size: 16px;
 }
 
@@ -156,7 +156,7 @@ textarea:read-only {
 
 .thought-text {
   font-size: 1rem;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--text-primary);
   word-break: break-word;
   white-space: pre-wrap;
@@ -354,7 +354,7 @@ textarea:read-only {
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
   font-size: 1rem;
-  line-height: 1.5;
+  line-height: 1.6;
   outline: none;
   resize: none;
   padding: 0.5rem 0;
@@ -367,6 +367,8 @@ textarea:read-only {
   gap: 0.5rem;
   padding: 0.75rem 0 2rem;
   border-bottom: none;
+  position: relative;
+  z-index: 2;
 }
 .thought-input-row .thought-input {
   border-bottom: none;
@@ -437,5 +439,16 @@ textarea:read-only {
   .thought-stream {
     padding-top: 60px;
     padding-bottom: 80px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thought-text {
+    transition: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
