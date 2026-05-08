@@ -21,7 +21,7 @@ export default function HuuuApp() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'f' || e.key === 'k')) {
         e.preventDefault()
         setIsSearchOpen(prev => !prev)
       }

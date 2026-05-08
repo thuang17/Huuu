@@ -13,17 +13,14 @@ interface ThoughtItemProps {
   onDeactivate: () => void
 }
 
-type AgeState = 'fresh' | 'recent' | 'retiring' | 'retired'
+type AgeState = 'fresh' | 'retiring' | 'retired'
 
-const RETIRE_DELAY_MS = 5 * 60 * 1000
-const RETIRE_ANIM_MS = 2000 // the "retiring" transition window
+const RETIRE_DELAY_MS = 4_000  // 4 seconds — blur starts quickly
+const RETIRE_ANIM_MS = 1500    // 1.5s transition window
 
 function getAgeState(ageMs: number): AgeState {
-  const RETIRE_TRANSITION = RETIRE_DELAY_MS + RETIRE_ANIM_MS
-
-  if (ageMs < 60_000) return 'fresh'
-  if (ageMs < RETIRE_DELAY_MS) return 'recent'
-  if (ageMs < RETIRE_TRANSITION) return 'retiring'
+  if (ageMs < RETIRE_DELAY_MS) return 'fresh'
+  if (ageMs < RETIRE_DELAY_MS + RETIRE_ANIM_MS) return 'retiring'
   return 'retired'
 }
 
@@ -31,8 +28,6 @@ function getAgeStyle(state: AgeState): { filter: string; opacity: number } {
   switch (state) {
     case 'fresh':
       return { filter: 'none', opacity: 1 }
-    case 'recent':
-      return { filter: 'blur(1px)', opacity: 0.85 }
     case 'retiring':
       return { filter: 'blur(3px)', opacity: 0.5 }
     case 'retired':
@@ -70,14 +65,11 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
     // Compute next boundary (ms until next state change)
     let msUntilNextBoundary: number | null = null
 
-    if (ageMs < 60_000) {
-      // fresh → recent at 60s
-      msUntilNextBoundary = 60_000 - ageMs
-    } else if (ageMs < RETIRE_DELAY_MS) {
-      // recent → retiring at 5min
+    if (ageMs < RETIRE_DELAY_MS) {
+      // fresh → retiring at 4s
       msUntilNextBoundary = RETIRE_DELAY_MS - ageMs
     } else if (ageMs < RETIRE_DELAY_MS + RETIRE_ANIM_MS) {
-      // retiring → retired at 5min+2s
+      // retiring → retired at 5.5s
       msUntilNextBoundary = RETIRE_DELAY_MS + RETIRE_ANIM_MS - ageMs
     }
     // already retired: no more boundaries
