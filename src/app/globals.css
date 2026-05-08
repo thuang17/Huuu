@@ -391,6 +391,13 @@ textarea:read-only {
   background-image: linear-gradient(rgba(255, 255, 255, 0.1), 80%, #fff);
 }
 
+.thought-empty {
+  font-size: 0.875rem;
+  color: var(--text-placeholder);
+  padding: 1.5rem 0;
+  margin: 0;
+}
+
 /* HR divider between input and thought list */
 .thought-divider {
   width: 100%;

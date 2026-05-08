@@ -47,6 +47,11 @@ export default function ThoughtSection({ title, thoughts }: ThoughtSectionProps)
         ))}
       </AnimatePresence>
       <div ref={bottomRef} />
+      {title === '今天' && thoughts.length === 0 && (
+        <p className="thought-empty">
+          今天还没有想法
+        </p>
+      )}
     </section>
   )
 }
