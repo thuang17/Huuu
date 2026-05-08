@@ -42,7 +42,7 @@ export default function HuuuApp() {
           </div>
         </main>
         <Onboarding />
-        <Omnibar />
+        <Omnibar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       </div>
     </AppContext.Provider>
   )
