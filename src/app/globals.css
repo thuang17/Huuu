@@ -169,6 +169,12 @@ textarea:read-only {
   margin: 0;
 }
 
+.thought-item:hover .thought-text {
+  filter: none !important;
+  opacity: 1 !important;
+  transition: filter 0.5s ease, opacity 0.5s ease;
+}
+
 /* .input-area removed — input is now inline in the thought stream */
 
 .menu-btn {
