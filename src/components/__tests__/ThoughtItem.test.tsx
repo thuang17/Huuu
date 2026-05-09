@@ -114,4 +114,22 @@ describe('ThoughtItem', () => {
     fireEvent.click(p)
     expect(defaultProps.onActivate).toHaveBeenCalledOnce()
   })
+
+  it('applies aging blur to a thought older than 30 seconds', () => {
+    const thought = makeThought({
+      timestamp: new Date(Date.now() - 31_000).toISOString(),
+    })
+    render(<ThoughtItem thought={thought} {...defaultProps} />)
+    const p = screen.getByText('test thought')
+    expect(p).toHaveStyle({ filter: 'blur(2px)', opacity: '0.65' })
+  })
+
+  it('applies old blur to a thought older than 2 minutes', () => {
+    const thought = makeThought({
+      timestamp: new Date(Date.now() - 121_000).toISOString(),
+    })
+    render(<ThoughtItem thought={thought} {...defaultProps} />)
+    const p = screen.getByText('test thought')
+    expect(p).toHaveStyle({ filter: 'blur(4px)', opacity: '0.4' })
+  })
 })

@@ -13,30 +13,26 @@ interface ThoughtItemProps {
   onDeactivate: () => void
 }
 
-type AgeState = 'fresh' | 'recent' | 'retiring' | 'retired'
+type AgeState = 'fresh' | 'aging' | 'old' | 'retired'
 
-const RETIRE_DELAY_MS = 5 * 60 * 1000
-const RETIRE_ANIM_MS = 2000 // the "retiring" transition window
+const STAGE_FRESH_MS  =       30_000  // 30s
+const STAGE_AGING_MS  =  2 * 60_000  // 2min
+const STAGE_OLD_MS    =  4 * 60_000  // 4min
+const RETIRE_DELAY_MS = STAGE_OLD_MS
 
 function getAgeState(ageMs: number): AgeState {
-  const RETIRE_TRANSITION = RETIRE_DELAY_MS + RETIRE_ANIM_MS
-
-  if (ageMs < 60_000) return 'fresh'
-  if (ageMs < RETIRE_DELAY_MS) return 'recent'
-  if (ageMs < RETIRE_TRANSITION) return 'retiring'
+  if (ageMs < STAGE_FRESH_MS) return 'fresh'
+  if (ageMs < STAGE_AGING_MS) return 'aging'
+  if (ageMs < STAGE_OLD_MS)   return 'old'
   return 'retired'
 }
 
 function getAgeStyle(state: AgeState): { filter: string; opacity: number } {
   switch (state) {
-    case 'fresh':
-      return { filter: 'none', opacity: 1 }
-    case 'recent':
-      return { filter: 'blur(1px)', opacity: 0.85 }
-    case 'retiring':
-      return { filter: 'blur(3px)', opacity: 0.5 }
-    case 'retired':
-      return { filter: 'blur(6px)', opacity: 0.3 }
+    case 'fresh':   return { filter: 'none',      opacity: 1.0  }
+    case 'aging':   return { filter: 'blur(2px)', opacity: 0.65 }
+    case 'old':     return { filter: 'blur(4px)', opacity: 0.4  }
+    case 'retired': return { filter: 'blur(6px)', opacity: 0.2  }
   }
 }
 
@@ -67,30 +63,24 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
   useEffect(() => {
     const ageMs = Date.now() - new Date(thought.timestamp).getTime()
 
-    // Compute next boundary (ms until next state change)
     let msUntilNextBoundary: number | null = null
 
-    if (ageMs < 60_000) {
-      // fresh → recent at 60s
-      msUntilNextBoundary = 60_000 - ageMs
-    } else if (ageMs < RETIRE_DELAY_MS) {
-      // recent → retiring at 5min
-      msUntilNextBoundary = RETIRE_DELAY_MS - ageMs
-    } else if (ageMs < RETIRE_DELAY_MS + RETIRE_ANIM_MS) {
-      // retiring → retired at 5min+2s
-      msUntilNextBoundary = RETIRE_DELAY_MS + RETIRE_ANIM_MS - ageMs
+    if (ageMs < STAGE_FRESH_MS) {
+      msUntilNextBoundary = STAGE_FRESH_MS - ageMs
+    } else if (ageMs < STAGE_AGING_MS) {
+      msUntilNextBoundary = STAGE_AGING_MS - ageMs
+    } else if (ageMs < STAGE_OLD_MS) {
+      msUntilNextBoundary = STAGE_OLD_MS - ageMs
     }
-    // already retired: no more boundaries
 
     if (msUntilNextBoundary === null) return
 
     const timer = setTimeout(() => {
-      // Force re-render by updating a counter state
       setRenderTick(t => t + 1)
     }, msUntilNextBoundary)
 
     return () => clearTimeout(timer)
-  }, [thought.timestamp, renderTick]) // re-schedule after each tick
+  }, [thought.timestamp, renderTick])
 
   useEffect(() => {
     if (isActive && textareaRef.current) {
