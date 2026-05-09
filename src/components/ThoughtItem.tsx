@@ -18,7 +18,6 @@ type AgeState = 'fresh' | 'aging' | 'old' | 'retired'
 const STAGE_FRESH_MS  =       30_000  // 30s
 const STAGE_AGING_MS  =  2 * 60_000  // 2min
 const STAGE_OLD_MS    =  4 * 60_000  // 4min
-const RETIRE_DELAY_MS = STAGE_OLD_MS
 
 function getAgeState(ageMs: number): AgeState {
   if (ageMs < STAGE_FRESH_MS) return 'fresh'
@@ -46,7 +45,7 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
   const ageStyle = getAgeStyle(ageState)
 
   useEffect(() => {
-    const msUntilRetire = RETIRE_DELAY_MS - (Date.now() - new Date(thought.timestamp).getTime())
+    const msUntilRetire = STAGE_OLD_MS - (Date.now() - new Date(thought.timestamp).getTime())
 
     if (msUntilRetire <= 0) {
       dispatch({ type: 'RETIRE', id: thought.id })
