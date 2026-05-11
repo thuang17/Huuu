@@ -13,7 +13,11 @@ const mockThought: Thought = {
   readOnly: false,
 }
 
-beforeEach(() => localStorage.clear())
+function clearAllStorage() {
+  Object.keys(localStorage).forEach(key => localStorage.removeItem(key))
+}
+
+beforeEach(() => clearAllStorage())
 
 describe('thoughts storage', () => {
   it('returns empty array when nothing stored', () => {

@@ -18,12 +18,7 @@ export function thoughtsReducer(state: Thought[], action: ThoughtsAction): Thoug
 }
 
 export function useThoughts() {
-  const [thoughts, dispatch] = useReducer(thoughtsReducer, [])
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    dispatch({ type: 'LOAD', thoughts: getThoughts() })
-  }, [])
+  const [thoughts, dispatch] = useReducer(thoughtsReducer, null, () => getThoughts())
 
   // Persist to localStorage on every change
   useEffect(() => {
