@@ -296,44 +296,36 @@ textarea:read-only {
   flex-shrink: 0;
 }
 
-.onboarding-overlay {
+.ob-overlay {
   position: fixed;
   inset: 0;
   background: var(--bg);
   z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  overflow: hidden;
+  cursor: default;
+  transition: opacity 0.8s ease;
 }
 
-.onboarding-messages {
-  max-width: 400px;
-  width: 100%;
-}
-
-.onboarding-message {
-  font-size: 1.125rem;
+.ob-thought-text {
+  display: block;
+  font-family: var(--font-noto), sans-serif;
+  font-weight: 400;
   color: var(--text-primary);
-  line-height: 1.7;
-  margin-bottom: 0.5rem;
 }
 
-.onboarding-btn {
-  margin-top: 2rem;
-  padding: 0.625rem 1.5rem;
-  border-radius: 4px;
-  border: 1px solid var(--text-secondary);
-  background: none;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.04em;
-}
-.onboarding-btn:hover {
-  border-color: var(--text-primary);
+.ob-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 400;
+  font-size: clamp(4rem, 11vw, 10rem);
   color: var(--text-primary);
+  letter-spacing: 0.2em;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 .voice-btn {
