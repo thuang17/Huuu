@@ -70,7 +70,7 @@ export default function Onboarding() {
       if (entered.current) return
       const dx = (e.clientX - window.innerWidth  / 2) / (window.innerWidth  / 2)
       const dy = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2)
-      container.querySelectorAll<HTMLElement>('[data-ob-thought]').forEach((el, i) => {
+      container!.querySelectorAll<HTMLElement>('[data-ob-thought]').forEach((el, i) => {
         const depth = (i % 3 + 1) * 5
         const dir   = i % 2 === 0 ? 1 : -1
         el.style.transform = `translate(${dx * depth * dir}px, ${dy * depth * dir}px)`
