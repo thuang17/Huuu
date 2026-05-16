@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Noto_Sans_SC } from 'next/font/google'
+import { Inter, Noto_Sans_SC, Oswald } from 'next/font/google'
 import './globals.css'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 
@@ -8,6 +8,11 @@ const notoSansSC = Noto_Sans_SC({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-noto',
+})
+const oswald = Oswald({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-oswald',
 })
 
 export const metadata: Metadata = {
@@ -47,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className={`${inter.variable} ${notoSansSC.variable} font-sans`}>
+      <body className={`${inter.variable} ${notoSansSC.variable} ${oswald.variable} font-sans`}>
         <ServiceWorkerRegistration />
         {children}
       </body>
