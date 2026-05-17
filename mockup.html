@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Huuu — Design Inspector</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+#shell{display:flex;height:100vh;background:#0a0a0a}
+
+/* ══ LEFT PANEL ══ */
+#panel{width:280px;min-width:240px;background:#111;border-right:1px solid #1e1e1e;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+#panel-top{padding:12px 14px 10px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#panel-top h1{font-size:12px;font-weight:600;color:#ccc;letter-spacing:.02em}
+.top-btns{display:flex;gap:6px}
+.top-btn{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:5px;color:#777;font-size:11px;cursor:pointer;padding:4px 9px;transition:color .15s,border-color .15s;white-space:nowrap}
+.top-btn:hover{color:#ccc;border-color:#444}
+.top-btn.accent{background:#1e2d1e;border-color:#2a4a2a;color:#6db86d}
+.top-btn.accent:hover{color:#8dd88d}
+#panel-body{flex:1;overflow-y:auto;padding-bottom:24px;scrollbar-width:thin;scrollbar-color:#252525 transparent}
+.sec-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 5px;cursor:pointer;user-select:none}
+.sec-header span{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555}
+.sec-header .chevron{font-size:9px;color:#444;transition:transform .15s}
+.sec-header.open .chevron{transform:rotate(90deg)}
+.sec-body{display:none;padding-bottom:4px}
+.sec-body.open{display:block}
+.row{display:flex;align-items:center;gap:8px;padding:4px 14px;min-height:28px}
+.lbl{font-size:11px;color:#666;width:108px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.color-wrap{display:flex;align-items:center;gap:6px;flex:1}
+.swatch{width:24px;height:20px;border-radius:4px;border:1px solid #2a2a2a;cursor:pointer;flex-shrink:0;position:relative;overflow:hidden}
+.swatch input[type=color]{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);opacity:0;cursor:pointer}
+.hex{font-size:11px;font-family:monospace;color:#888;background:#161616;border:1px solid #222;border-radius:4px;padding:2px 6px;width:72px;outline:none}
+.hex:focus{border-color:#3a3a3a;color:#ccc}
+.slider-wrap{display:flex;align-items:center;gap:7px;flex:1}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;background:#222;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:#d0d0d0;cursor:pointer;transition:background .15s}
+input[type=range]::-webkit-slider-thumb:hover{background:#fff}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#d0d0d0;border:none;cursor:pointer}
+.val{font-size:11px;color:#555;width:38px;text-align:right;flex-shrink:0;font-family:monospace}
+select{flex:1;background:#161616;border:1px solid #222;border-radius:4px;color:#888;font-size:11px;padding:3px 6px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+select:focus{border-color:#3a3a3a;color:#ccc}
+.sep{height:1px;background:#1a1a1a;margin:6px 14px}
+
+/* ══ PREVIEW ══ */
+#preview-pane{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column}
+#mode-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#0e0e0e;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+.mode-btn{background:none;border:1px solid #252525;border-radius:5px;color:#555;font-size:11px;cursor:pointer;padding:3px 10px;transition:all .15s}
+.mode-btn.active{background:#1e1e1e;border-color:#3a3a3a;color:#ccc}
+#zoom-label{margin-left:auto;font-size:11px;color:#444}
+#preview-scroll{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:24px;background:#0d0d0d;scrollbar-width:thin;scrollbar-color:#1e1e1e transparent}
+
+/* ══ VIEWPORT SHELL ══ */
+#viewport{
+  background:var(--bg,#000);
+  width:100%;max-width:1200px;
+  min-height:600px;
+  position:relative;
+  transition:max-width .2s;
+  box-shadow:0 0 0 1px #1e1e1e,0 20px 60px rgba(0,0,0,.6);
+}
+
+/* ══ HUUU UI TOKEN DEFAULTS (user values) ══ */
+#viewport{
+  --bg:#000000;
+  --text-primary:#eaeaea;
+  --text-secondary:#666666;
+  --text-placeholder:#444444;
+  --divider-color:#1e1e1e;
+  --highlight:#191919;
+  --border:#2a2a2a;
+  --timestamp-color:#555555;
+
+  --font-family:Georgia,'Times New Roman',serif;
+  --line-height:1;
+
+  --logo-size:19px;
+  --logo-weight:700;
+  --logo-ls:0.005em;
+  --header-height:60px;
+  --header-pad-h:28px;
+  --menu-btn-size:21px;
+
+  --input-size:16px;
+  --voice-btn-size:19px;
+
+  --divider-height:1px;
+  --divider-margin-top:2px;
+  --divider-margin-bottom:0px;
+
+  --section-heading-size:20px;
+  --section-heading-weight:800;
+  --section-heading-ls:0.04em;
+  --section-gap:24px;
+
+  --thought-text-size:16px;
+  --thought-pad-v:12px;
+  --highlight-radius:7px;
+  --timestamp-size:12px;
+  --empty-size:17px;
+  --empty-pad-v:8px;
+
+  --content-max-width:960px;
+  --content-pad-h:32px;
+
+  --fade-height:230px;
+  --fade-opacity:0.5;
+
+  /* internal — card inset (negative) */
+  --card-inset-x:12px;
+  --card-inset-y:0px;
+}
+
+/* ── App shell ── */
+.h-app{min-height:600px;display:flex;flex-direction:column;background:var(--bg);color:var(--text-primary);font-family:var(--font-family)}
+
+/* ── Header ── */
+.h-header{position:sticky;top:0;height:var(--header-height);display:flex;align-items:center;padding:0 var(--header-pad-h);z-index:10;background:var(--bg)}
+.h-logo{font-size:var(--logo-size);font-weight:var(--logo-weight);letter-spacing:var(--logo-ls);color:var(--text-primary)}
+.h-menu-btn{margin-left:auto;background:none;border:none;color:var(--text-secondary);cursor:pointer;padding:4px 8px;border-radius:4px;display:flex;align-items:center;transition:color .15s}
+.h-menu-btn:hover{color:var(--text-primary)}
+.h-menu-btn svg{width:var(--menu-btn-size);height:var(--menu-btn-size);stroke:currentColor}
+
+/* ── Stream ── */
+.h-stream{max-width:var(--content-max-width);margin:0 auto;width:100%;padding:40px var(--content-pad-h) 80px calc(var(--content-pad-h) + 72px)}
+.h-section+.h-section{margin-top:var(--section-gap)}
+.h-section-title{font-size:var(--section-heading-size);font-weight:var(--section-heading-weight);letter-spacing:var(--section-heading-ls);color:var(--text-secondary)}
+
+/* ── Unified card block ──
+   Both .h-input-row and .h-thought share the exact same
+   ::before hover/focus card. No underlines anywhere. */
+.h-thought{
+  position:relative;
+  isolation:isolate;
+  padding:var(--thought-pad-v) 0;
+}
+/* Input row: flex so content can be vertically centered,
+   giving the card the same height as a single thought item */
+.h-input-row{
+  position:relative;
+  isolation:isolate;
+  /* Explicit height = exactly one thought card height, no padding */
+  height:calc(var(--thought-pad-v) * 2 + var(--thought-text-size) * var(--line-height));
+  display:flex;
+  align-items:center;
+}
+.h-input-row::before,
+.h-thought::before{
+  content:'';
+  position:absolute;
+  top:var(--card-inset-y);
+  bottom:var(--card-inset-y);
+  left:calc(-1 * var(--card-inset-x));
+  right:calc(-1 * var(--card-inset-x));
+  background:var(--highlight);
+  border-radius:var(--highlight-radius);
+  z-index:-1;
+  opacity:0;
+  transition:opacity .15s;
+  pointer-events:none;
+}
+/* hover on any block */
+.h-input-row:hover::before,
+.h-thought:hover::before{ opacity:1 }
+/* focus inside input row = same card */
+.h-input-row:focus-within::before{ opacity:1 }
+
+/* ── Input ── */
+.h-input{
+  flex:1;background:transparent;
+  border:none;outline:none;
+  color:var(--text-primary);
+  font-size:var(--input-size);
+  line-height:var(--line-height);
+  /* Lock to exactly one line — same height as a single thought-text line */
+  height:calc(var(--input-size) * var(--line-height));
+  overflow:hidden;
+  resize:none;
+  padding:0;
+  font-family:inherit;
+  display:block;
+}
+.h-input::placeholder{color:var(--text-placeholder)}
+
+.h-input-inner{
+  display:flex;align-items:center;gap:8px;
+  width:100%;
+}
+.h-voice-btn{background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;min-width:44px;min-height:44px;transition:color .15s}
+.h-voice-btn:hover{color:var(--text-primary)}
+.h-voice-btn svg{width:var(--voice-btn-size);height:var(--voice-btn-size);stroke:currentColor}
+
+/* ── Divider ── */
+.h-divider{width:100%;height:var(--divider-height);background:var(--divider-color);border:0;margin:var(--divider-margin-top) 0 var(--divider-margin-bottom)}
+
+/* ── Empty state ── */
+.h-empty{font-size:var(--empty-size);color:var(--text-placeholder);padding:var(--empty-pad-v) 0;margin:0}
+
+/* ── Thought content ── */
+.h-thought-text{font-size:var(--thought-text-size);line-height:var(--line-height);color:var(--text-primary);word-break:break-word;white-space:pre-wrap;margin:0}
+.h-timestamp{
+  position:absolute;
+  /* right edge of timestamp sits just left of the card's left edge */
+  left:calc(-1 * var(--card-inset-x) - 8px);
+  top:50%;
+  transform:translate(-100%,-50%);
+  white-space:nowrap;
+  font-size:var(--timestamp-size);
+  color:var(--timestamp-color);
+  pointer-events:none;
+}
+
+/* ── Bottom fade ── */
+.h-stream::after{content:"";background:linear-gradient(rgba(0,0,0,0),var(--bg));width:100%;height:var(--fade-height);position:sticky;bottom:0;left:0;z-index:1;pointer-events:none;opacity:var(--fade-opacity);display:block}
+</style>
+</head>
+<body>
+<div id="shell">
+
+<!-- ════ LEFT PANEL ════ -->
+<div id="panel">
+  <div id="panel-top">
+    <h1>Huuu Inspector</h1>
+    <div class="top-btns">
+      <button class="top-btn" id="reset-btn">重置</button>
+      <button class="top-btn accent" id="copy-btn">复制 CSS</button>
+    </div>
+  </div>
+  <div id="panel-body">
+
+    <div class="sec-header open" data-sec="colors"><span>颜色</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-colors"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="typo"><span>字体 & 排版</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-typo"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="header"><span>Header</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-header"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="input"><span>输入框</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-input"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="divider"><span>分割线</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-divider"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="section"><span>分区标题</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-section"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="thought"><span>想法卡片</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-thought"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="layout"><span>布局 & 间距</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-layout"></div>
+    <div class="sep"></div>
+
+    <div class="sec-header open" data-sec="effects"><span>效果</span><span class="chevron">▶</span></div>
+    <div class="sec-body open" id="sec-effects"></div>
+
+  </div>
+</div>
+
+<!-- ════ PREVIEW ════ -->
+<div id="preview-pane">
+  <div id="mode-bar">
+    <button class="mode-btn active" data-w="1200">桌面</button>
+    <button class="mode-btn" data-w="768">平板</button>
+    <button class="mode-btn" data-w="390">手机</button>
+    <span id="zoom-label">宽度: 1200px</span>
+  </div>
+  <div id="preview-scroll">
+    <div id="viewport">
+      <div class="h-app">
+        <header class="h-header">
+          <div class="h-logo">Huuu</div>
+          <button class="h-menu-btn"><svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg></button>
+        </header>
+
+        <div class="h-stream">
+          <!-- Today -->
+          <div class="h-section">
+            <div class="h-section-title">今天</div>
+            <!-- Input row — same card as thought items -->
+            <div class="h-input-row">
+              <div class="h-input-inner">
+                <textarea class="h-input" rows="1" placeholder="有什么困扰你？"></textarea>
+                <button class="h-voice-btn"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg></button>
+              </div>
+            </div>
+            <hr class="h-divider"/>
+            <p class="h-empty">今天还没有想法</p>
+          </div>
+
+          <!-- Yesterday -->
+          <div class="h-section">
+            <div class="h-section-title">昨天</div>
+            <div class="h-thought">
+              <p class="h-thought-text">我想开始记录每天的想法，看看随着时间流逝它们会变成什么样子。</p>
+              <span class="h-timestamp">14:32</span>
+            </div>
+            <div class="h-thought">
+              <p class="h-thought-text">今天天气很好，适合出门散步。</p>
+              <span class="h-timestamp">09:15</span>
+            </div>
+          </div>
+
+          <!-- Older -->
+          <div class="h-section">
+            <div class="h-section-title">更早</div>
+            <div class="h-thought">
+              <p class="h-thought-text">也许沉默本身就是一种语言。</p>
+              <span class="h-timestamp">3天前 · 22:01</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const vp = document.getElementById('viewport');
+function set(p,v){vp.style.setProperty(p,v)}
+
+// viewport width
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const w=parseInt(btn.dataset.w);
+    vp.style.maxWidth=w+'px';
+    document.getElementById('zoom-label').textContent=`宽度: ${w}px`;
+  });
+});
+
+// ── Control definitions ──
+const COLORS=[
+  {id:'bg',             label:'背景色',     prop:'--bg',              def:'#000000'},
+  {id:'text-primary',   label:'主文字',     prop:'--text-primary',    def:'#eaeaea'},
+  {id:'text-secondary', label:'次文字',     prop:'--text-secondary',  def:'#666666'},
+  {id:'text-placeholder',label:'占位符',    prop:'--text-placeholder',def:'#444444'},
+  {id:'divider-color',  label:'分割线色',   prop:'--divider-color',   def:'#1e1e1e'},
+  {id:'highlight',      label:'卡片背景',   prop:'--highlight',       def:'#191919'},
+  {id:'border',         label:'边框色',     prop:'--border',          def:'#2a2a2a'},
+  {id:'timestamp-color',label:'时间戳色',   prop:'--timestamp-color', def:'#555555'},
+];
+
+const TYPO=[
+  {id:'font-family',label:'字体族',prop:'--font-family',type:'select',
+    options:[
+      {v:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",l:'系统默认'},
+      {v:"Georgia,'Times New Roman',serif",l:'Georgia (衬线)'},
+      {v:"'Courier New',monospace",l:'Courier (等宽)'},
+      {v:"'Helvetica Neue',Arial,sans-serif",l:'Helvetica'},
+    ],
+    def:"Georgia,'Times New Roman',serif"},
+  {id:'line-height',label:'行高',prop:'--line-height',type:'slider',min:0.9,max:2.5,step:0.05,unit:'',def:1},
+];
+
+const HEADER=[
+  {id:'logo-size',    label:'Logo 大小',   prop:'--logo-size',    type:'slider',min:12,max:32,step:1,unit:'px',def:19},
+  {id:'logo-weight',  label:'Logo 字重',   prop:'--logo-weight',  type:'slider',min:300,max:900,step:100,unit:'',def:700},
+  {id:'logo-ls',      label:'Logo 字间距', prop:'--logo-ls',      type:'slider',min:-0.08,max:0.12,step:0.005,unit:'em',def:0.005},
+  {id:'header-height',label:'Header 高度', prop:'--header-height',type:'slider',min:32,max:100,step:4,unit:'px',def:60},
+  {id:'header-pad-h', label:'Header 横距', prop:'--header-pad-h', type:'slider',min:8,max:80,step:4,unit:'px',def:28},
+  {id:'menu-btn-size',label:'菜单图标',    prop:'--menu-btn-size',type:'slider',min:14,max:28,step:1,unit:'px',def:21},
+];
+
+const INPUT_CTRLS=[
+  {id:'input-size',    label:'字体大小',  prop:'--input-size',    type:'slider',min:12,max:24,step:1,unit:'px',def:16},
+  {id:'voice-btn-size',label:'麦克风图标',prop:'--voice-btn-size',type:'slider',min:14,max:28,step:1,unit:'px',def:19},
+];
+
+const DIVIDER=[
+  {id:'divider-height',       label:'粗细',  prop:'--divider-height',       type:'slider',min:0,max:6,step:1,unit:'px',def:1},
+  {id:'divider-margin-top',   label:'上间距',prop:'--divider-margin-top',   type:'slider',min:0,max:48,step:2,unit:'px',def:2},
+  {id:'divider-margin-bottom',label:'下间距',prop:'--divider-margin-bottom',type:'slider',min:0,max:48,step:2,unit:'px',def:0},
+];
+
+const SECTION=[
+  {id:'section-heading-size',  label:'字体大小',prop:'--section-heading-size',  type:'slider',min:9,max:32,step:1,unit:'px',def:20},
+  {id:'section-heading-weight',label:'字重',    prop:'--section-heading-weight',type:'slider',min:300,max:900,step:100,unit:'',def:800},
+  {id:'section-heading-ls',    label:'字间距',  prop:'--section-heading-ls',    type:'slider',min:-0.04,max:0.2,step:0.005,unit:'em',def:0.04},
+  {id:'section-gap',           label:'区块间距',prop:'--section-gap',           type:'slider',min:4,max:120,step:4,unit:'px',def:24},
+];
+
+const THOUGHT=[
+  {id:'thought-text-size',label:'文字大小',  prop:'--thought-text-size',type:'slider',min:12,max:28,step:1,unit:'px',def:16},
+  {id:'thought-pad-v',    label:'卡片上下距（统一）',prop:'--thought-pad-v',type:'slider',min:2,max:32,step:1,unit:'px',def:12},
+  {id:'highlight-radius', label:'卡片圆角',  prop:'--highlight-radius', type:'slider',min:0,max:20,step:1,unit:'px',def:7},
+  {id:'card-inset-x',     label:'卡片横扩展',prop:'--card-inset-x',     type:'slider',min:0,max:32,step:2,unit:'px',def:12},
+  {id:'timestamp-size',   label:'时间戳大小',prop:'--timestamp-size',   type:'slider',min:9,max:16,step:1,unit:'px',def:12},
+  {id:'empty-size',       label:'空状态大小',prop:'--empty-size',       type:'slider',min:10,max:24,step:1,unit:'px',def:17},
+  {id:'empty-pad-v',      label:'空状态间距',prop:'--empty-pad-v',      type:'slider',min:4,max:48,step:4,unit:'px',def:8},
+];
+
+const LAYOUT=[
+  {id:'content-max-width',label:'最大宽度',  prop:'--content-max-width',type:'slider',min:480,max:1440,step:40,unit:'px',def:960},
+  {id:'content-pad-h',    label:'横向内边距',prop:'--content-pad-h',    type:'slider',min:8,max:80,step:4,unit:'px',def:32},
+];
+
+const EFFECTS=[
+  {id:'fade-height', label:'底部渐变高度',prop:'--fade-height', type:'slider',min:0,max:400,step:10,unit:'px',def:230},
+  {id:'fade-opacity',label:'底部渐变透明',prop:'--fade-opacity',type:'slider',min:0,max:1,step:0.05,unit:'',def:0.5},
+];
+
+// ── Render helpers ──
+function renderColor(c,container){
+  const row=document.createElement('div');row.className='row';
+  row.innerHTML=`<span class="lbl">${c.label}</span><div class="color-wrap"><div class="swatch" id="sw-${c.id}" style="background:${c.def}"><input type="color" id="cp-${c.id}" value="${c.def}"/></div><input class="hex" id="hx-${c.id}" type="text" value="${c.def}" maxlength="7"/></div>`;
+  container.appendChild(row);
+  const cp=row.querySelector(`#cp-${c.id}`),hx=row.querySelector(`#hx-${c.id}`),sw=row.querySelector(`#sw-${c.id}`);
+  const apply=v=>{sw.style.background=v;set(c.prop,v)};
+  cp.addEventListener('input',()=>{hx.value=cp.value;apply(cp.value)});
+  hx.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(hx.value.trim())){cp.value=hx.value.trim();apply(hx.value.trim())}});
+  hx.addEventListener('keydown',e=>{if(e.key==='Enter')hx.blur()});
+}
+
+function renderSlider(s,container){
+  const row=document.createElement('div');row.className='row';
+  const disp=s.unit==='px'?`${s.def}px`:`${s.def}${s.unit}`;
+  row.innerHTML=`<span class="lbl">${s.label}</span><div class="slider-wrap"><input type="range" id="sl-${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.def}"/><span class="val" id="vl-${s.id}">${disp}</span></div>`;
+  container.appendChild(row);
+  const sl=row.querySelector(`#sl-${s.id}`),vl=row.querySelector(`#vl-${s.id}`);
+  sl.addEventListener('input',()=>{const raw=parseFloat(sl.value);const d=s.unit==='px'?`${raw}px`:`${raw}${s.unit}`;vl.textContent=d;set(s.prop,d)});
+}
+
+function renderSelect(s,container){
+  const row=document.createElement('div');row.className='row';
+  const opts=s.options.map(o=>`<option value="${o.v}"${o.v===s.def?' selected':''}>${o.l}</option>`).join('');
+  row.innerHTML=`<span class="lbl">${s.label}</span><select id="sel-${s.id}">${opts}</select>`;
+  container.appendChild(row);
+  const sel=row.querySelector(`#sel-${s.id}`);
+  sel.addEventListener('change',()=>set(s.prop,sel.value));
+}
+
+function renderSection(defs,id){
+  const c=document.getElementById(id);
+  defs.forEach(d=>{
+    if(d.type==='select')renderSelect(d,c);
+    else if(d.type==='slider')renderSlider(d,c);
+  });
+}
+
+COLORS.forEach(c=>renderColor(c,document.getElementById('sec-colors')));
+renderSection(TYPO,'sec-typo');
+renderSection(HEADER,'sec-header');
+renderSection(INPUT_CTRLS,'sec-input');
+renderSection(DIVIDER,'sec-divider');
+renderSection(SECTION,'sec-section');
+renderSection(THOUGHT,'sec-thought');
+renderSection(LAYOUT,'sec-layout');
+renderSection(EFFECTS,'sec-effects');
+
+// ── Collapsible ──
+document.querySelectorAll('.sec-header').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const body=document.getElementById('sec-'+h.dataset.sec);
+    h.classList.toggle('open');body.classList.toggle('open');
+  });
+});
+
+// ── All controls for reset/export ──
+const ALL_SLIDERS=[...TYPO,...HEADER,...INPUT_CTRLS,...DIVIDER,...SECTION,...THOUGHT,...LAYOUT,...EFFECTS].filter(s=>s.type==='slider');
+const ALL_SELECTS=[...TYPO].filter(s=>s.type==='select');
+
+// ── Reset ──
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  COLORS.forEach(c=>{
+    document.getElementById(`cp-${c.id}`).value=c.def;
+    document.getElementById(`hx-${c.id}`).value=c.def;
+    document.getElementById(`sw-${c.id}`).style.background=c.def;
+    set(c.prop,c.def);
+  });
+  ALL_SLIDERS.forEach(s=>{
+    const sl=document.getElementById(`sl-${s.id}`),vl=document.getElementById(`vl-${s.id}`);
+    if(!sl)return;
+    sl.value=s.def;
+    const d=s.unit==='px'?`${s.def}px`:`${s.def}${s.unit}`;
+    vl.textContent=d;set(s.prop,d);
+  });
+  ALL_SELECTS.forEach(s=>{
+    const sel=document.getElementById(`sel-${s.id}`);
+    if(!sel)return;
+    sel.value=s.def;set(s.prop,s.def);
+  });
+});
+
+// ── Copy CSS ──
+document.getElementById('copy-btn').addEventListener('click',()=>{
+  const lines=[':root {'];
+  COLORS.forEach(c=>lines.push(`  ${c.prop}: ${document.getElementById(`hx-${c.id}`).value};`));
+  ALL_SLIDERS.forEach(s=>{
+    const sl=document.getElementById(`sl-${s.id}`);if(!sl)return;
+    const raw=parseFloat(sl.value);
+    lines.push(`  ${s.prop}: ${s.unit==='px'?`${raw}px`:`${raw}${s.unit}`};`);
+  });
+  ALL_SELECTS.forEach(s=>{
+    const sel=document.getElementById(`sel-${s.id}`);if(!sel)return;
+    lines.push(`  ${s.prop}: ${sel.value};`);
+  });
+  lines.push('}');
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='✓ 已复制';
+    setTimeout(()=>{btn.textContent='复制 CSS'},2000);
+  });
+});
+
+// ── Textarea auto-resize ──
+document.querySelectorAll('.h-input').forEach(ta=>{
+  ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'});
+});
+</script>
+</body>
+</html>
