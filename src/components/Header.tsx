@@ -1,9 +1,16 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Moon, Sun, Monitor } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
 import { useAppContext } from '@/context/AppContext'
 import type { Theme } from '@/lib/types'
+
+const THEME_OPTIONS: { value: Theme; Icon: typeof Moon; label: string }[] = [
+  { value: 'dark',   Icon: Moon,    label: '深色' },
+  { value: 'light',  Icon: Sun,     label: '浅色' },
+  { value: 'system', Icon: Monitor, label: '跟随系统' },
+]
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
@@ -39,17 +46,18 @@ export default function Header() {
         <div className="header-menu" role="menu">
           {/* Theme switcher */}
           <div className="menu-section">
-            <p className="menu-label">主题</p>
             <div className="theme-options">
-              {(['dark', 'light', 'system'] as Theme[]).map(t => (
+              {THEME_OPTIONS.map(({ value, Icon, label }) => (
                 <button
-                  key={t}
-                  className={`theme-btn ${theme === t ? 'active' : ''}`}
-                  onClick={() => setTheme(t)}
+                  key={value}
+                  className={`theme-icon-btn${theme === value ? ' active' : ''}`}
+                  onClick={() => setTheme(value)}
                   role="menuitemradio"
-                  aria-checked={theme === t}
+                  aria-checked={theme === value}
+                  aria-label={label}
+                  data-tooltip={label}
                 >
-                  {t === 'dark' ? '深色' : t === 'light' ? '浅色' : '系统'}
+                  <Icon size={15} strokeWidth={1.75} />
                 </button>
               ))}
             </div>
