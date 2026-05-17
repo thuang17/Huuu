@@ -83,17 +83,12 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
 
   useEffect(() => {
     if (isActive && textareaRef.current) {
-      const ta = textareaRef.current
-      ta.style.height = 'auto'
-      ta.style.height = ta.scrollHeight + 'px'
+      textareaRef.current.focus()
     }
   }, [isActive])
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     dispatch({ type: 'UPDATE', id: thought.id, value: e.target.value })
-    const textarea = e.target
-    textarea.style.height = 'auto'
-    textarea.style.height = textarea.scrollHeight + 'px'
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -129,7 +124,6 @@ export default function ThoughtItem({ thought, isActive, onActivate, onDeactivat
             onKeyDown={handleKeyDown}
             autoFocus
             className="thought-input"
-            style={{ height: 'auto' }}
           />
         ) : (
           <p

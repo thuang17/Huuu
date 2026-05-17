@@ -158,7 +158,7 @@ textarea:read-only {
 .thought-item::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: 2px;
   bottom: 0;
   left: calc(-1 * var(--card-inset-x));
   right: calc(-1 * var(--card-inset-x));
