@@ -1,16 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #000;
+  --bg: #000000;
   --fg: #fff;
   --text-primary: #eaeaea;
-  --text-secondary: #666;
-  --text-placeholder: #444;
+  --text-secondary: #666666;
+  --text-placeholder: #444444;
   --divider: #1e1e1e;
   --highlight: #191919;
   --menu-bg: #191919;
   --border: #2a2a2a;
   --accent: #d4d4d4;
+  --timestamp-color: #555555;
+  --thought-pad-v: 14px;
+  --highlight-radius: 7px;
+  --card-inset-x: 12px;
+  --thought-text-size: 16px;
+  --line-height: 1;
 }
 
 [data-theme="light"] {
@@ -29,6 +35,7 @@
 html, body {
   background: var(--bg);
   color: var(--text-primary);
+  font-family: Georgia, 'Times New Roman', serif;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -48,8 +55,8 @@ textarea {
   resize: none;
   width: 100%;
   padding: 0;
-  line-height: 1.6;
-  font-size: 16px;
+  line-height: var(--line-height);
+  font-size: var(--thought-text-size);
 }
 
 textarea:focus {
@@ -87,18 +94,18 @@ textarea:read-only {
   top: 0;
   left: 0;
   right: 0;
-  height: 40px;
+  height: 60px;
   display: flex;
   align-items: center;
-  padding: 0 2rem;
+  padding: 0 28px;
   z-index: 10;
 }
 
 .logo {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.005em;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 .logo--hidden {
@@ -114,7 +121,8 @@ textarea:read-only {
   max-width: 960px;
   margin: 0 auto;
   width: 100%;
-  padding: 120px 2rem 4rem;
+  /* extra left padding gives timestamps room to sit outside the card */
+  padding: 100px 32px 4rem calc(32px + 64px);
 }
 
 .thought-list {
@@ -126,12 +134,12 @@ textarea:read-only {
 }
 
 .thought-section + .thought-section {
-  margin-top: 48px;
+  margin-top: 24px;
 }
 
 .thought-section h2 {
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--text-secondary);
   letter-spacing: 0.04em;
   margin-bottom: 0;
@@ -139,7 +147,7 @@ textarea:read-only {
 }
 
 .thought-item {
-  padding: 0.875rem 0;
+  padding: var(--thought-pad-v) 0;
   outline: none;
   border: none;
   user-select: text;
@@ -147,22 +155,29 @@ textarea:read-only {
   isolation: isolate;
 }
 
-.thought-item--active::before {
+.thought-item::before {
   content: '';
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: -12px;
-  right: -12px;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--card-inset-x));
+  right: calc(-1 * var(--card-inset-x));
   background: var(--highlight);
-  border-radius: 8px;
+  border-radius: var(--highlight-radius);
   z-index: -1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
   pointer-events: none;
 }
 
+.thought-item:hover::before,
+.thought-item--active::before {
+  opacity: 1;
+}
+
 .thought-text {
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--thought-text-size);
+  line-height: var(--line-height);
   color: var(--text-primary);
   word-break: break-word;
   white-space: pre-wrap;
@@ -363,44 +378,65 @@ textarea:read-only {
 .voice-btn:hover { color: var(--text-primary); }
 
 .thought-input {
-  width: 100%;
+  flex: 1;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-primary);
-  font-size: 1rem;
-  line-height: 1.6;
   outline: none;
+  color: var(--text-primary);
+  font-size: var(--thought-text-size);
+  line-height: var(--line-height);
   resize: none;
-  padding: 0.5rem 0;
+  padding: 0;
   font-family: inherit;
+  /* Lock to exactly one line so the card height matches thought items */
+  height: calc(var(--thought-text-size) * var(--line-height));
+  overflow: hidden;
 }
 
 .thought-input-row {
+  /* Fixed height = same formula as .thought-item */
+  height: calc(var(--thought-pad-v) * 2 + var(--thought-text-size) * var(--line-height));
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 0 2rem;
-  border-bottom: none;
   position: relative;
+  isolation: isolate;
   z-index: 2;
 }
-.thought-input-row .thought-input {
-  border-bottom: none;
-  padding: 0;
+
+/* Unified card — same ::before as thought items */
+.thought-input-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--card-inset-x));
+  right: calc(-1 * var(--card-inset-x));
+  background: var(--highlight);
+  border-radius: var(--highlight-radius);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.thought-input-row:hover::before,
+.thought-input-row:focus-within::before {
+  opacity: 1;
 }
 
 /* Bottom gradient fade */
 .thought-stream::after {
   content: "";
-  background-image: linear-gradient(rgba(0, 0, 0, 0.1), 80%, #000);
+  background-image: linear-gradient(rgba(0, 0, 0, 0), var(--bg));
   width: 100%;
-  height: 300px;
+  height: 230px;
   position: fixed;
   bottom: 0;
   left: 0;
   z-index: 1;
   pointer-events: none;
+  opacity: 0.5;
 }
 
 [data-theme="light"] .thought-stream::after {
@@ -408,9 +444,9 @@ textarea:read-only {
 }
 
 .thought-empty {
-  font-size: 0.875rem;
+  font-size: 17px;
   color: var(--text-placeholder);
-  padding: 1.5rem 0;
+  padding: 8px 0;
   margin: 0;
 }
 
@@ -418,31 +454,27 @@ textarea:read-only {
 .thought-divider {
   width: 100%;
   height: 1px;
-  background: #1e1e1e;
+  background: var(--divider);
   border: 0;
-  margin: 16px 0 0;
+  margin: 6px 0 0;
 }
 
 [data-theme="light"] .thought-divider {
   background: #e8e8e8;
 }
 
-/* Hover timestamps */
+/* Timestamps — always visible, sit just left of the card */
 .thought-timestamp {
-  opacity: 0;
-  color: var(--text-secondary);
+  color: var(--timestamp-color);
   font-size: 12px;
   position: absolute;
-  left: -72px;
-  top: 26px;
+  /* right edge of timestamp = left edge of card (card-inset-x) + 8px gap */
+  left: calc(-1 * var(--card-inset-x) - 8px);
+  top: 50%;
+  transform: translate(-100%, -50%);
   transition: opacity 0.2s ease;
   white-space: nowrap;
   pointer-events: none;
-}
-
-.thought-item:hover .thought-timestamp,
-.thought-item--active .thought-timestamp {
-  opacity: 1;
 }
 
 @media (max-width: 640px) {
@@ -451,6 +483,7 @@ textarea:read-only {
     right: 4px;
     top: unset;
     bottom: 4px;
+    transform: none;
     background: var(--bg);
     padding: 2px 6px;
     border-radius: 4px;
@@ -459,8 +492,9 @@ textarea:read-only {
   }
 
   .thought-stream {
-    padding-top: 60px;
+    padding-top: 80px;
     padding-bottom: 80px;
+    padding-left: 1rem;
   }
 }
 
